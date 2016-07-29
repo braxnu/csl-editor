@@ -339,7 +339,9 @@ CSL_CHROME.prototype.insertPublisherAndPlace = function(myxml) {
                     }
                 }
                 if (child.childNodes.length - subskippers.length === 0) {
+                    console.log('a');
                     twovars.push(child.getAttribute('variable'));
+
                     if (child.getAttribute('suffix')
                         || child.getAttribute('prefix')) {
                         twovars = [];

@@ -583,30 +583,79 @@ CSL_NODEJS_JSDOM.prototype.insertChildNodeAfter = function (parent,node,pos,date
     parent.replaceChild(myxml, node);
     return parent;
  };
+
+function filterTextNodes (nodeList) {
+    var result = [];
+    var i = 0;
+    var node;
+
+    while (node = nodeList.item(i++)) {
+        if (node.nodeType !== 3) {
+            result.push(node);
+        }
+    }
+
+    return result;
+}
+
 CSL_NODEJS_JSDOM.prototype.insertPublisherAndPlace = function(myxml) {
     zotero.Debug('CSL_NODEJS.insertPublisherAndPlace', 5);
     var group = myxml.getElementsByTagName("group");
+
     for (var i = 0, ilen = group.length; i < ilen; i += 1) {
         var node = group.item(i);
-        if (node.childNodes.length === 2) {
+        var childNodes = filterTextNodes(node.childNodes);
+
+        // if (1 || node.childNodes.length === 2) {
+        if (childNodes.length === 2) {
             var twovars = [];
-            for (var j = 0, jlen = 2; j < jlen; j += 1) {
-                var child = node.childNodes.item(j);
-                if (child.childNodes.length === 0) {
+    
+            // console.log();
+            // console.log();
+            // console.log('group node', {
+            //     '': '',
+            //     nodeType: node.nodeType,
+            //     nodeName: node.nodeName,
+            //     nodeValue: node.nodeValue,
+            //     length: childNodes.length
+            // });
+            // console.log();
+
+            // for (var j = 0, jlen = node.childNodes.length; j < jlen; j += 1) {
+            //     var child = node.childNodes.item(j);
+            for (var j = 0, jlen = childNodes.length; j < jlen; j += 1) {
+                var child = childNodes[j];
+
+                if (filterTextNodes(child.childNodes).length === 0) {
+                    // console.log('    child node', {
+                    //     '': '',
+                    //     '   nodeType': child.nodeType,
+                    //     '   nodeName': child.nodeName,
+                    //     '   nodeValue': child.nodeValue,
+                    //     '   length': child.childNodes.length,
+                    //     '   getAttribute': !!child.getAttribute,
+                    //     '   variable': child.getAttribute && child.getAttribute('variable'),
+                    //     '   prefix': child.getAttribute && child.getAttribute('prefix'),
+                    //     '   suffix': child.getAttribute && child.getAttribute('suffix')
+                    // });
+                    // console.log();
+
                     twovars.push(child.getAttribute('variable'));
-                    if (child.getAttribute('suffix')
-                        || child.getAttribute('prefix')) {
+    
+                    if (child.getAttribute('suffix') || child.getAttribute('prefix')) {
                         twovars = [];
                         break;
                     }
                 }
             }
+
             if (twovars.indexOf("publisher") > -1 && twovars.indexOf("publisher-place") > -1) {
                 node.setAttribute('has-publisher-and-publisher-place', true);
             }
         }
     }
 };
+
 CSL_NODEJS_JSDOM.prototype.addMissingNameNodes = function(myxml) {
     var nameslist = myxml.getElementsByTagName("names");
     for (var i = 0, ilen = nameslist.length; i < ilen; i += 1) {

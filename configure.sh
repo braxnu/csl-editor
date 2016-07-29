@@ -1,10 +1,11 @@
 #!/bin/bash
 
+node -v
 mkdir generated
 
 # generate example citations
 cd exampleCitationsGenerator
-npm install
+# npm install
 node generateExampleCitations.js
 cd ..
 

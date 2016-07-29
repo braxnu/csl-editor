@@ -67,12 +67,15 @@ define([	'src/options',
 
 		result = { "statusMessage": "", "formattedCitations": [], "formattedBibliography": [] };
 		result.statusMessage = "";
+
 		if (style !== previousStyle) {
 			try {
 				citeproc = new CSL.Engine(citeprocSys, style);
 				previousStyle = style;
 			}
 			catch (err) {
+				console.log(err.stack);
+				process.exit();
 				result.statusMessage = "Citeproc initialisation exception: " + err;
 				return result;
 			}
@@ -91,6 +94,7 @@ define([	'src/options',
 				citations = citeproc.appendCitationCluster(cluster, false);
 			}
 			catch (err) {
+				console.log(err.stack);
 				result.statusMessage = "Citeproc exception: " + err;
 				return false;
 			}
@@ -131,6 +135,7 @@ define([	'src/options',
 			bibliography = citeproc.makeBibliography(makeBibliographyArgument);
 		}
 		catch (err) {
+			console.log(err.stack);
 			result.statusMessage = "Citeproc exception: " + err;
 			return result;
 		}
